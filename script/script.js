@@ -35,17 +35,21 @@ const debounceTimer = (fn, msec) => {
 
   const navigationLinks = document.querySelectorAll('.navigation__link');
   const calcElems = document.querySelectorAll('.calc');
+  const calcForm = document.querySelectorAll('.calc__form');
 
   for (let i = 0; i < navigationLinks.length; i += 1) {
     navigationLinks[i].addEventListener('click', () => {
       for (let j = 0; j < calcElems.length; j += 1) {
-        if (navigationLinks[i].dataset.tax === calcElems[j].dataset.tax) {
-          calcElems[j].classList.add('calc_active');
-          navigationLinks[j].classList.add('navigation__link_active');
-        } else {
-          calcElems[j].classList.remove('calc_active');
-          navigationLinks[j].classList.remove('navigation__link_active');
-        }
+        calcForm.forEach((form) => {
+          if (navigationLinks[i].dataset.tax === calcElems[j].dataset.tax) {
+            calcElems[j].classList.add('calc_active');
+            navigationLinks[j].classList.add('navigation__link_active');
+          } else {
+            calcElems[j].classList.remove('calc_active');
+            navigationLinks[j].classList.remove('navigation__link_active');
+            form.reset();
+          }
+        });
       }
     });
   }
@@ -68,7 +72,7 @@ const debounceTimer = (fn, msec) => {
     if (formAusn.type.value === 'income') {
       calcLabelExpenses.style.display = 'none';
       resultTaxTotal.textContent = formatCurrency(income * 0.08);
-      expenses = '';
+      formAusn.expenses.value = '';
     }
 
     if (formAusn.type.value === 'expenses') {
@@ -114,6 +118,8 @@ const debounceTimer = (fn, msec) => {
     });
   };
 
+  
+
   checkCompensation();
 
   const handlerForm = () => {
@@ -143,6 +149,7 @@ const debounceTimer = (fn, msec) => {
   formSelfEmployment.addEventListener('reset', () => {
     setTimeout(handlerForm);
   });
+
   formSelfEmployment.addEventListener('input', debounceTimer(handlerForm, 300));
 }
 
@@ -163,6 +170,7 @@ const debounceTimer = (fn, msec) => {
   );
   const resultTaxNdflIncome = osno.querySelector('.result__tax_ndfl-income');
   const resultTaxProfit = osno.querySelector('.result__tax_profit');
+  const inputRadio = osno.querySelectorAll('input[type=radio]');
 
   const checkFormBusiness = () => {
     if (formOsno.formBusiness.value === 'emploer') {
@@ -206,6 +214,14 @@ const debounceTimer = (fn, msec) => {
   });
 
   formOsno.addEventListener('input', debounceTimer(handlerForm, 300));
+
+  inputRadio.forEach((input) => {
+    input.addEventListener('change', () => {
+      formOsno.expenses.value = '';
+      formOsno.income.value = '';
+      formOsno.property.value = '';
+    });
+  });
 }
 
 {
@@ -221,6 +237,7 @@ const debounceTimer = (fn, msec) => {
 
   const resultTaxTotal = usn.querySelector('.result__tax_total');
   const resultTaxProperty = usn.querySelector('.result__tax_property');
+  const inputRadio = usn.querySelectorAll('input[type=radio]');
 
   const typeTax = {
     income: () => {
@@ -285,6 +302,15 @@ const debounceTimer = (fn, msec) => {
   });
 
   formUsn.addEventListener('input', debounceTimer(handlerForm, 300));
+
+  inputRadio.forEach((input) => {
+    input.addEventListener('change', () => {
+      formUsn.expenses.value = '';
+      formUsn.income.value = '';
+      formUsn.contributions.value = '';
+      formUsn.property.value = '';
+    });
+  });
 }
 
 {
@@ -296,6 +322,7 @@ const debounceTimer = (fn, msec) => {
   const resultTaxNdfl = taxReturn.querySelector('.result__tax_ndfl');
   const resultTaxPossible = taxReturn.querySelector('.result__tax_possible');
   const resultTaxDeduction = taxReturn.querySelector('.result__tax_deduction');
+  const inputRadio = taxReturn.querySelectorAll('input[type=radio]');
 
   const handlerForm = () => {
     const expenses = +formTaxReturn.expenses.value;
@@ -312,9 +339,16 @@ const debounceTimer = (fn, msec) => {
     resultTaxDeduction.textContent = formatCurrency(deduction);
   };
 
-  formTaxReturn.addEventListener('reset', () => {
+  formTaxReturn.addEventListener('reset', (e) => {
     setTimeout(handlerForm);
   });
 
   formTaxReturn.addEventListener('input', debounceTimer(handlerForm, 300));
+
+  inputRadio.forEach((input) => {
+    input.addEventListener('change', () => {
+      formTaxReturn.expenses.value = '';
+      formTaxReturn.income.value = '';
+    });
+  });
 }
